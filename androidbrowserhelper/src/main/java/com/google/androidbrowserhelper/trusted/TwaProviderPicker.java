@@ -157,11 +157,11 @@ public class TwaProviderPicker {
                 if (providerName.equals(preferredProvider)){
                     Log.d(TAG, "Found TWA provider from preferred providers list: " + providerName);
 
-                    @LaunchMode int launchMode = customTabsServices.containsKey(providerName)
+                    @LaunchMode int lm = customTabsServices.containsKey(providerName)
                             ? customTabsServices.get(providerName) : LaunchMode.BROWSER;
 
                     // We're only interested in support for twas
-                    if (launchMode == LaunchMode.TRUSTED_WEB_ACTIVITY) {
+                    if (lm == LaunchMode.TRUSTED_WEB_ACTIVITY) {
                         return new Action(LaunchMode.TRUSTED_WEB_ACTIVITY, providerName);
                     }
                 }
@@ -234,3 +234,4 @@ public class TwaProviderPicker {
         return customTabsServices;
     }
 }
+
