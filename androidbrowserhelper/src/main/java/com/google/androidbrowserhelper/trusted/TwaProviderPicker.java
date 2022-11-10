@@ -65,6 +65,15 @@ import androidx.browser.customtabs.TrustedWebUtils;
 public class TwaProviderPicker {
     private static final String TAG = "TWAProviderPicker";
     private static String sPackageNameForTesting;
+    private static String[] preferredProviders = {
+        "com.android.chrome", 
+        "com.microsoft.emmx", 
+        "org.mozilla.firefox", 
+        "com.chrome.beta", 
+        "org.mozilla.firefox_beta",         
+        "com.chrome.dev",
+        "org.mozilla.fenix"
+    };
 
     @IntDef({LaunchMode.TRUSTED_WEB_ACTIVITY, LaunchMode.CUSTOM_TAB, LaunchMode.BROWSER})
     @Retention(RetentionPolicy.SOURCE)
@@ -139,6 +148,26 @@ public class TwaProviderPicker {
         }
 
         Map<String, Integer> customTabsServices = getLaunchModesForCustomTabsServices(pm);
+        
+        for (ResolveInfo possibleProvider : possibleProviders) {
+            String providerName = possibleProvider.activityInfo.packageName;
+
+            for (String preferredProvider : preferredProviders) {
+
+                if (providerName.equals(preferredProvider)){
+                    Log.d(TAG, "Found TWA provider from preferred providers list: " + providerName);
+
+                    @LaunchMode int launchMode = customTabsServices.containsKey(providerName)
+                            ? customTabsServices.get(providerName) : LaunchMode.BROWSER;
+
+                    // We're only interested in support for twas
+                    if (launchMode == LaunchMode.TRUSTED_WEB_ACTIVITY) {
+                        return new Action(LaunchMode.TRUSTED_WEB_ACTIVITY, providerName);
+                    }
+                }
+            }
+            Log.d(TAG, "Provider not in preferred providers list: " + providerName);
+        }
 
         for (ResolveInfo possibleProvider : possibleProviders) {
             String providerName = possibleProvider.activityInfo.packageName;
